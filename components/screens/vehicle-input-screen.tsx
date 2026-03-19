@@ -168,7 +168,7 @@ export function VehicleInputScreen({ onNext, onBack, initialData, initialStep }:
 
   const toggleOption = (optionId: string) => {
     const newOptions = formData.options.includes(optionId)
-      ? formData.options.filter(id => id !== optionId)
+      ? formData.options.filter((id: string) => id !== optionId)
       : [...formData.options, optionId]
     setFormData({ ...formData, options: newOptions })
   }

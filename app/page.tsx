@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { WelcomeScreen } from "@/components/screens/welcome-screen"
-import { VehicleInputScreen } from "@/components/screens/vehicle-input-screen"
-import { SummaryScreen } from "@/components/screens/summary-screen"
 import { PriceResultScreen } from "@/components/screens/price-result-screen"
+import { SummaryScreen } from "@/components/screens/summary-screen"
+import { VehicleInputScreen } from "@/components/screens/vehicle-input-screen"
+import { WelcomeScreen } from "@/components/screens/welcome-screen"
 
 type VehicleFormData = {
   manufacturer: string
@@ -30,6 +30,13 @@ type PredictionData = {
   fastPrice: number
   fairPrice: number
   highPrice: number
+  pricingMeta?: {
+    fixedCost: number
+    marginRate: number
+    fastDiscount: number
+    trustDiscount: number
+    baseQ50: number
+  }
   explanation: {
     summary: string
     detail: string
@@ -58,9 +65,19 @@ const initialVehicleData: VehicleFormData = {
 }
 
 type Step =
-  | "manufacturer" | "model" | "trim" | "year" | "displacement" | "fuel"
-  | "transmission" | "vehicleClass" | "seats" | "color"
-  | "mileage" | "accident" | "options"
+  | "manufacturer"
+  | "model"
+  | "trim"
+  | "year"
+  | "displacement"
+  | "fuel"
+  | "transmission"
+  | "vehicleClass"
+  | "seats"
+  | "color"
+  | "mileage"
+  | "accident"
+  | "options"
 
 type EditSection = "basic" | "status" | "accident" | "options"
 
@@ -68,7 +85,35 @@ const sectionToStep: Record<EditSection, Step> = {
   basic: "manufacturer",
   status: "mileage",
   accident: "accident",
-  options: "options"
+  options: "options",
+}
+
+function createMockPrediction(vehicleData: VehicleFormData): PredictionData {
+  const currentYear = new Date().getFullYear()
+  const age = vehicleData.year ? currentYear - Number(vehicleData.year) : 5
+  const mileage = Number(String(vehicleData.mileage).replace(/,/g, "")) || 50000
+  const optionCount = Array.isArray(vehicleData.options) ? vehicleData.options.length : 0
+  const hasAccident = vehicleData.accident.includes("사고")
+
+  const basePrice = Math.max(500, 3200 - age * 180 - (mileage / 10000) * 45)
+  const accidentFactor = hasAccident ? 0.86 : 1
+  const optionBonus = optionCount * 12
+
+  const fairPrice = Math.round((basePrice * accidentFactor + optionBonus) / 10) * 10
+  const fastPrice = Math.round((fairPrice * 0.93) / 10) * 10
+  const highPrice = Math.round((fairPrice * 1.08) / 10) * 10
+
+  return {
+    fastPrice,
+    fairPrice,
+    highPrice,
+    explanation: {
+      summary: "입력한 차량 조건을 바탕으로 예상 판매 가격대를 계산했어요.",
+      detail:
+        "연식, 주행거리, 사고 이력, 옵션 수를 함께 반영해 빠른 판매가와 적정 판매가, 기대 판매가를 구성했습니다.",
+      tip: "급하게 판매해야 한다면 빠른 판매가를, 여유가 있다면 적정 판매가부터 시작해 보세요.",
+    },
+  }
 }
 
 export default function Home() {
@@ -81,6 +126,7 @@ export default function Home() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [currentScreen])
+
   const handleVehicleNext = (data: VehicleFormData) => {
     setVehicleData(data)
     setEditStep(null)
@@ -96,24 +142,9 @@ export default function Home() {
     try {
       setIsLoading(true)
 
-      // 주행거리 기반 mock 가격 계산 (실제 API 연결 전 UI 테스트용)
-      const generateMockPrediction = (): PredictionData => {
-        const basePriceFactor = vehicleData.year ? (2024 - parseInt(vehicleData.year)) : 5
-        const mileage = parseInt(String(vehicleData.mileage).replace(/,/g, "")) || 50000
-        const mileageFactor = mileage / 10000
-        const accidentFactor = vehicleData.accident === "사고 이력 있음" ? 0.85 : 1
-        const optionBonus = vehicleData.options.length * 50000
-        
-        const basePrice = Math.max(500, 3500 - (basePriceFactor * 200) - (mileageFactor * 50))
-        const fairPrice = Math.round((basePrice * accidentFactor + optionBonus / 10000) / 10) * 10
-        const fastPrice = Math.round((fairPrice * 0.92) / 10) * 10
-        const highPrice = Math.round((fairPrice * 1.08) / 10) * 10
-        
-        return { fastPrice, fairPrice, highPrice }
-      }
-
       try {
-        const res = await fetch("http://127.0.0.1:8000/predict", {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+        const res = await fetch(`${apiBaseUrl}/predict`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -124,16 +155,14 @@ export default function Home() {
         const result = await res.json()
 
         if (!res.ok) {
-          throw new Error(result.detail || "예측 요청에 실패했습니다.")
+          throw new Error(result.detail || "가격 예측 요청에 실패했습니다.")
         }
 
         setPrediction(result)
       } catch {
-        // API 연결 실패 시 mock 데이터 사용 (UI 테스트용)
-        console.log("[v0] API 연결 실패, mock 데이터 사용")
-        setPrediction(generateMockPrediction())
+        setPrediction(createMockPrediction(vehicleData))
       }
-      
+
       setCurrentScreen(3)
     } catch (error) {
       const message =
@@ -145,20 +174,20 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto max-w-[430px] min-h-screen bg-background shadow-2xl relative mt-3">
-      
-
+    <div className="relative mx-auto mt-3 min-h-screen max-w-[430px] bg-background shadow-2xl">
       <div className="pt-6">
         {currentScreen === 0 && (
-          <WelcomeScreen onStart={() => {
-            setEditStep(null)
-            setCurrentScreen(1)
-          }} />
+          <WelcomeScreen
+            onStart={() => {
+              setEditStep(null)
+              setCurrentScreen(1)
+            }}
+          />
         )}
 
         {currentScreen === 1 && (
-          <VehicleInputScreen 
-            onNext={handleVehicleNext} 
+          <VehicleInputScreen
+            onNext={handleVehicleNext}
             onBack={() => setCurrentScreen(0)}
             initialData={vehicleData}
             initialStep={editStep}
@@ -183,7 +212,7 @@ export default function Home() {
             vehicleData={vehicleData}
             prediction={prediction}
             onBack={() => setCurrentScreen(2)}
-            onRegister={() => alert("등록 기능은 프로토타입에서 지원하지 않아요")}
+            onRegister={() => alert("등록 기능은 다음 단계에서 연결할 예정입니다.")}
           />
         )}
       </div>

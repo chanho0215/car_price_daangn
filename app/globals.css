@@ -115,11 +115,46 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@layer components {
+  .screen-hero {
+    @apply text-[30px] font-bold leading-[1.3];
+  }
+
+  .screen-section-title {
+    @apply text-[22px] font-bold leading-[1.4];
+  }
+
+  .screen-label {
+    @apply text-[15px] font-semibold leading-6;
+  }
+
+  .screen-body {
+    @apply text-[15px] leading-6;
+  }
+
+  .screen-caption {
+    @apply text-sm leading-5;
+  }
+
+  .screen-note {
+    @apply text-[13px] leading-6;
+  }
+
+  .screen-button {
+    @apply text-[15px] font-semibold leading-6;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-break: strict;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 }
