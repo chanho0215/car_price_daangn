@@ -263,7 +263,7 @@ export function PriceResultScreen({
         <section>
           <div className="mb-3 flex items-center gap-2">
             <CircleDollarSign className="h-5 w-5 text-primary" />
-            <h2 className="screen-section-title text-foreground">가격 예측 결과</h2>
+            <h2 className="screen-section-title text-foreground">추천 판매 가격</h2>
           </div>
 
           <div className="space-y-3">
