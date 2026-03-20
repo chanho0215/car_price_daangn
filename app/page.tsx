@@ -159,8 +159,20 @@ export default function Home() {
         }
 
         setPrediction(result)
-      } catch {
-        setPrediction(createMockPrediction(vehicleData))
+      } catch (apiError) {
+        console.error("Predict API error:", apiError)
+
+        const isLocalhost =
+          typeof window !== "undefined" &&
+          ["localhost", "127.0.0.1"].includes(window.location.hostname)
+
+        if (isLocalhost) {
+          setPrediction(createMockPrediction(vehicleData))
+        } else {
+          throw apiError instanceof Error
+            ? apiError
+            : new Error("가격 예측 요청에 실패했습니다.")
+        }
       }
 
       setCurrentScreen(3)
