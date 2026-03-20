@@ -41,6 +41,7 @@ type PredictionData = {
     summary: string
     detail: string
     tip: string
+    source?: string
   }
 }
 

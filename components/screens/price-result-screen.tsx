@@ -167,6 +167,7 @@ export function PriceResultScreen({
   const explanationTip =
     prediction?.explanation?.tip ||
     "빨리 판매하고 싶다면 빠른 판매가에 가깝게, 여유가 있다면 적정 판매가부터 시작해보세요."
+  const isOpenAiExplanation = prediction?.explanation?.source === "openai"
 
   const strategies = [
     {
@@ -243,11 +244,15 @@ export function PriceResultScreen({
               <p className="screen-label text-foreground">
                 {vehicleData.manufacturer} {vehicleData.model} {vehicleData.trim || ""}
               </p>
-              <p className="screen-body mt-1 text-muted-foreground">
-                내 차 조건을 바탕으로 지금 올려볼 만한 가격대를 한눈에 정리했어요.
-              </p>
+              <p className="screen-body mt-1 text-muted-foreground">{explanationSummary}</p>
             </div>
           </div>
+
+          {isOpenAiExplanation && (
+            <div className="mt-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5">
+              <span className="screen-caption font-medium text-primary">AI 설명 반영됨</span>
+            </div>
+          )}
 
           <div className="mt-4 flex flex-wrap gap-2">
             {summaryBadges.map((badge) => (
