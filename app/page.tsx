@@ -94,7 +94,7 @@ function createMockPrediction(vehicleData: VehicleFormData): PredictionData {
   const age = vehicleData.year ? currentYear - Number(vehicleData.year) : 5
   const mileage = Number(String(vehicleData.mileage).replace(/,/g, "")) || 50000
   const optionCount = Array.isArray(vehicleData.options) ? vehicleData.options.length : 0
-  const hasAccident = vehicleData.accident.includes("사고")
+  const hasAccident = vehicleData.accident === "사고 이력 있음"
 
   const basePrice = Math.max(500, 3200 - age * 180 - (mileage / 10000) * 45)
   const accidentFactor = hasAccident ? 0.86 : 1
