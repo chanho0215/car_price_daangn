@@ -222,7 +222,7 @@ def generate_price_explanation(
 
     accident_text = (
         "사고 이력 있음"
-        if "사고" in str(form_data.get("accident", ""))
+        if str(form_data.get("accident", "")).strip() == "사고 이력 있음"
         else "무사고"
     )
     option_count = len(form_data.get("options", []))
@@ -268,7 +268,11 @@ def generate_price_explanation(
             input=[
                 {
                     "role": "system",
-                    "content": "당신은 중고차 판매가 설명을 작성하는 도우미입니다. 반드시 JSON만 출력하세요.",
+                    "content": (
+                        "당신은 중고차 판매가 설명을 작성하는 도우미입니다. "
+                        "반드시 JSON만 출력하세요. 제공된 차량 정보만 사용하고, "
+                        "입력에 없는 사실은 추측하지 마세요. 특히 사고 여부는 입력값을 그대로 반영하세요."
+                    ),
                 },
                 {
                     "role": "user",
