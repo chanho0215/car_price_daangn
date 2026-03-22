@@ -341,29 +341,31 @@ export default function Home() {
       </div>
 
       {isLoading && currentScreen === 2 && (
-        <div className="absolute inset-0 z-[60] flex items-center justify-center bg-background/70 backdrop-blur-sm">
-          <div className="mx-6 w-full max-w-[320px] rounded-3xl border border-border bg-card/95 p-6 shadow-2xl">
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Loader2 className="h-7 w-7 animate-spin text-primary" />
-              </div>
+        <div className="fixed inset-0 z-[60] bg-background/70 backdrop-blur-sm">
+          <div className="mx-auto flex min-h-screen w-full max-w-[430px] items-center justify-center px-6 py-6">
+            <div className="w-full max-w-[320px] rounded-3xl border border-border bg-card/95 p-6 shadow-2xl">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                  <Loader2 className="h-7 w-7 animate-spin text-primary" />
+                </div>
 
-              <h3 className="text-lg font-semibold text-foreground">
-                AI가 예측값을 생성하고 있어요
-              </h3>
+                <h3 className="text-lg font-semibold text-foreground">
+                  AI가 예측값을 생성하고 있어요
+                </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                입력한 차량 정보를 바탕으로 가격을 계산하고,
-                결과 설명까지 함께 준비하고 있어요.
-              </p>
-
-              <div className="mt-4 w-full rounded-2xl border border-border bg-background/80 px-4 py-3 text-left">
-                <p className="text-sm font-medium text-foreground">
-                  잠시만 기다려 주세요
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  입력한 차량 정보를 바탕으로 가격을 계산하고,
+                  결과 설명까지 함께 준비하고 있어요.
                 </p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  보통 5~15초 정도 걸릴 수 있어요. 예측 가격과 함께 AI 설명도 같이 생성하고 있습니다.
-                </p>
+
+                <div className="mt-4 w-full rounded-2xl border border-border bg-background/80 px-4 py-3 text-left">
+                  <p className="text-sm font-medium text-foreground">
+                    잠시만 기다려 주세요
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    보통 5~15초 정도 걸릴 수 있어요. 예측 가격과 함께 AI 설명도 같이 생성하고 있습니다.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
