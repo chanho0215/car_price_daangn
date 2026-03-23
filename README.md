@@ -24,6 +24,7 @@
 | 프런트엔드 | Next.js · React · TypeScript |
 | 백엔드 | FastAPI · Python |
 | 배포 환경 | Vercel · Render |
+| 웹사이트 | https://car-price-bermuda.vercel.app/ |
 
 ## 왜 만들었나
 
